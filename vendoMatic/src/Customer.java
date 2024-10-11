@@ -1,2 +1,2 @@
-public class Customer implements User{
+public class Customer extends Controller implements User{
 }
