@@ -11,6 +11,7 @@ public class Main {
         System.out.println(machine.getCurrentUser());
         System.out.println(machine.getMoney());
 
+        machine.Init();
         machine.displayOptions();
 
     }
