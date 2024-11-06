@@ -4,7 +4,9 @@ import java.util.Scanner;
 
 public class Machine {
 
-    private List<Coin> money;
+    private List<Currency> machineMoney;
+    private List<Currency> money;
+    private Float userCredit;
     private User currentUser;
     private List<Slot> slots;
     private ItemFactory itemFactory;
@@ -22,13 +24,22 @@ public class Machine {
             "CRISPS"
     };
 
+    final static String[] coinNames = {
+            "TWO_POUND",
+            "POUND",
+            "FIFTY_PENCE",
+            "TWENTY_PENCE",
+            "TEN_PENCE",
+            "FIVE_PENCE",
+            "ONE_PENCE"
+    };
+
 
 
     public Machine(Float money, User currentUser) {
-        this.money = new ArrayList<Coin>();
+        this.money = new ArrayList<Currency>();
         this.currentUser = currentUser;
         this.slots = new ArrayList<Slot>();
-        this.itemFactory = new ItemFactory();
     }
 
     public void Init() {
@@ -86,31 +97,109 @@ public class Machine {
         System.out.println("Please enter the Number for the product you want.");
 
         int input = this.getInput();
+
+        Item result = purchaseProduct(input);
+
+        depositItem(result);
     }
 
-    private void getCredit() {
-        System.out.println("You are now viewing current credits in the Machine");
+    private Item purchaseProduct(int input) {
+
+        this.userCredit = getCredit();
+
+        Slot chosenSlot = this.slots.get(input);
+
+        Float price = chosenSlot.getSlotPrice();
+
+        this.userCredit -= price;
+
+        this.money.clear();
+
+        System.out.println(this.userCredit);
+
+        // Convert to coins;
+        convertToChange(this.userCredit);
+
+        return chosenSlot.removeStock();
+    }
+
+    private void convertToChange(Float userCredit) {
+        while(userCredit > 0) {
+            Currency coin = null;
+            if (userCredit >= 2.00F){
+                coin = CoinFactory.createCoin("TWO_POUND");
+                this.money.add(coin);
+            } else if (userCredit >= 1.00F) {
+                coin = CoinFactory.createCoin("POUND");
+                this.money.add(coin);
+            } else if (userCredit >= 0.50F) {
+                coin = CoinFactory.createCoin("FIFTY_PENCE");
+                this.money.add(coin);
+            } else if (userCredit >= 0.20F) {
+                coin = CoinFactory.createCoin("TWENTY_PENCE");
+                this.money.add(coin);
+            } else if (userCredit >= 0.10F) {
+                coin = CoinFactory.createCoin("TEN_PENCE");
+                this.money.add(coin);
+            } else if (userCredit >= 0.05F) {
+                coin = CoinFactory.createCoin("FIVE_PENCE");
+                this.money.add(coin);
+            }
+              else if (userCredit >= 0.01F) {
+                coin = CoinFactory.createCoin("FIVE_PENCE");
+                this.money.add(coin);
+            }
+            assert coin != null;
+            userCredit -= coin.Value();
+
+        }
+    }
+
+    private void depositItem(Item item){
+        System.out.println("You received one " + item.name() + ".");
+    }
+
+    private Float getCredit() {
+        System.out.println("You are now viewing your current credits in the Machine");
         float total = 0f;
-        for (Coin coin : this.money) {
-            total += coin.getValue();
+        for (Currency coin : this.money) {
+            total += coin.Value();
 
         }
         System.out.println("£" + total);
+
+        return total;
     }
 
     private void addCredit() {
+        int number = 1;
         System.out.println("You are now Inserting Credits into the Machine");
-        Coin coin = new Coin("Sterling", 1.00F, "£1");
+        for (String coin : coinNames) {
+            System.out.println(number + ": " + coin + ".");
+            number++;
+        }
+        System.out.println("Please input the number corresponding to the coin type you wish to deposit.");
+        int response = getInput();
 
-        this.money.add(coin);
+        System.out.println("You have selected to insert " + coinNames[response - 1]);
+        System.out.println("Please select the amount you wish to deposit (Integer).");
 
-        System.out.println(this.money);
+        int amount = getInput();
 
-        this.getCredit();
+        // Instantiate the coins and add them to the money variable
+        for (int i = 0; i < amount; i++) {
+            Currency coin = CoinFactory.createCoin(coinNames[response - 1]);
+            this.money.add(coin);
+        }
+
+        System.out.println("You have successfully deposited " + " " + amount + " " + coinNames[response - 1] + " " + "coins.");
     }
 
     private void refund() {
-        System.out.println();
+        for (Currency coin : this.money) {
+            System.out.println("You Received : " + coin.Name());
+        }
+        this.money.clear();
     }
 
     public int getInput() {
@@ -118,8 +207,8 @@ public class Machine {
         return scanner.nextInt();
     }
 
-    public List<Coin> getMoney() {
-        return money;
+    public List<Currency> getMoney() {
+        return this.money;
     }
 
     public User getCurrentUser() {

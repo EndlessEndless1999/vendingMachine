@@ -40,10 +40,9 @@ public class Slot {
         this.currentItems.add(item);
     }
 
-    public List<Item> removeStock() {
-        Item item = this.currentItems.getFirst();
-        this.currentItems.removeFirst();
-        return this.currentItems;
+    public Item removeStock() {
+        Item item = this.currentItems.removeFirst();
+        return item;
     }
 
 
