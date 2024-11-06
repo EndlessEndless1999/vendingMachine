@@ -11,6 +11,7 @@ public final class ItemFactory {
             case "FLAKE" -> new Flake();
             case "PEANUTS" -> new Peanuts();
             case "CRISPS" -> new Crisps();
+            case "BEER" -> new Beer();
             default -> throw new IllegalArgumentException("Invalid Item");
         };
     }
@@ -23,6 +24,7 @@ public final class ItemFactory {
             case "KITKAT", "CRISPS" -> 0.75F;
             case "TWIX", "PEANUTS" -> 0.50F;
             case "FLAKE" -> 0.95F;
+            case "BEER" -> 2.75F;
             default -> throw new IllegalArgumentException("Invalid Item");
         };
     }

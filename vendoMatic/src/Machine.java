@@ -4,14 +4,20 @@ import java.util.Scanner;
 
 public class Machine {
 
-    private List<Currency> machineMoney;
-    private List<Currency> money;
+    private List<Coin> machineMoneyTwoPound;
+    private List<Coin> machineMoneyPound;
+    private List<Coin> machineMoneyFiftyPence;
+    private List<Coin> machineMoneyTwentyPence;
+    private List<Coin> machineMoneyTenPence;
+    private List<Coin> machineMoneyFivePence;
+    private List<Coin> machineMoneyOnePence;
+    private List<Coin> money;
+    private List<Coin> bucket;
     private Float userCredit;
     private User currentUser;
     private List<Slot> slots;
-    private ItemFactory itemFactory;
 
-    final static String[] itemNames = {
+    private static String[] itemNames = {
             "COLA",
             "FANTA",
             "DR_PEPPER",
@@ -24,7 +30,21 @@ public class Machine {
             "CRISPS"
     };
 
-    final static String[] coinNames = {
+    private static String[] itemDictionary = {
+            "COLA",
+            "FANTA",
+            "DR_PEPPER",
+            "SPRITE",
+            "VIMTO",
+            "KITKAT",
+            "TWIX",
+            "FLAKE",
+            "PEANUTS",
+            "CRISPS",
+            "BEER"
+    };
+
+    private static String[] coinNames = {
             "TWO_POUND",
             "POUND",
             "FIFTY_PENCE",
@@ -37,7 +57,16 @@ public class Machine {
 
 
     public Machine(Float money, User currentUser) {
-        this.money = new ArrayList<Currency>();
+        this.money = new ArrayList<Coin>();
+        this.bucket = new ArrayList<Coin>();
+        this.machineMoneyTwoPound = new ArrayList<Coin>();
+        this.machineMoneyPound = new ArrayList<Coin>();
+        this.machineMoneyFiftyPence = new ArrayList<Coin>();
+        this.machineMoneyTwentyPence = new ArrayList<Coin>();
+        this.machineMoneyTenPence = new ArrayList<Coin>();
+        this.machineMoneyFivePence = new ArrayList<Coin>();
+        this.machineMoneyOnePence = new ArrayList<Coin>();
+
         this.currentUser = currentUser;
         this.slots = new ArrayList<Slot>();
     }
@@ -59,34 +88,16 @@ public class Machine {
         System.out.println(this.slots);
     }
 
-    public void displayOptions() {
-
-        //While Loop is cleaner for this implementation
-
-        System.out.println("Please choose from the following options.");
-        System.out.println("1 : Insert Credit.");
-        System.out.println("2 : Choose Product.");
-        System.out.println("3 : View Credit.");
-        System.out.println("4 : Refund Credit");
-
-        int input = this.getInput();
-
-        switch (input) {
-            case 0 -> this.end();
-            case 1 -> this.addCredit();
-            case 2 -> this.chooseProduct();
-            case 3 -> this.getCredit();
-            case 4 -> this.refund();
-        }
-        displayOptions();
+    public void login() {
+        Main.startUp();
     }
 
-    private void end() {
+    public void end() {
         System.exit(0);
     }
 
 
-    private void chooseProduct() {
+    public void chooseProduct() {
         System.out.println("You are now viewing current products in the Machine");
 
         for (Slot slot : this.slots) {
@@ -103,7 +114,7 @@ public class Machine {
         depositItem(result);
     }
 
-    private Item purchaseProduct(int input) {
+    public Item purchaseProduct(int input) {
 
         this.userCredit = getCredit();
 
@@ -124,33 +135,38 @@ public class Machine {
     }
 
     private void convertToChange(Float userCredit) {
-        while(userCredit > 0) {
-            Currency coin = null;
+        while(userCredit > 0.001F) {
+            Float value = 0F;
             if (userCredit >= 2.00F){
-                coin = CoinFactory.createCoin("TWO_POUND");
-                this.money.add(coin);
+                Coin search = this.machineMoneyTwoPound.removeFirst();
+                this.money.add(search);
+                value = 2.00F;
             } else if (userCredit >= 1.00F) {
-                coin = CoinFactory.createCoin("POUND");
-                this.money.add(coin);
+                Coin search = this.machineMoneyPound.removeFirst();
+                this.money.add(search);
+                value = 1.00F;
             } else if (userCredit >= 0.50F) {
-                coin = CoinFactory.createCoin("FIFTY_PENCE");
-                this.money.add(coin);
+                Coin search = this.machineMoneyFiftyPence.removeFirst();
+                this.money.add(search);
+                value = 0.50F;
             } else if (userCredit >= 0.20F) {
-                coin = CoinFactory.createCoin("TWENTY_PENCE");
-                this.money.add(coin);
+                Coin search = this.machineMoneyTwentyPence.removeFirst();
+                this.money.add(search);
+                value = 0.20F;
             } else if (userCredit >= 0.10F) {
-                coin = CoinFactory.createCoin("TEN_PENCE");
-                this.money.add(coin);
+                Coin search = this.machineMoneyTenPence.removeFirst();
+                this.money.add(search);
+                value = 0.10F;
             } else if (userCredit >= 0.05F) {
-                coin = CoinFactory.createCoin("FIVE_PENCE");
-                this.money.add(coin);
+                Coin search = this.machineMoneyFivePence.removeFirst();
+                this.money.add(search);
+                value = 0.05F;
+            } else if (userCredit >= 0.01F) {
+                Coin search = this.machineMoneyOnePence.removeFirst();
+                this.money.add(search);
+                value = 0.01F;
             }
-              else if (userCredit >= 0.01F) {
-                coin = CoinFactory.createCoin("FIVE_PENCE");
-                this.money.add(coin);
-            }
-            assert coin != null;
-            userCredit -= coin.Value();
+            userCredit -= value;
 
         }
     }
@@ -159,10 +175,10 @@ public class Machine {
         System.out.println("You received one " + item.name() + ".");
     }
 
-    private Float getCredit() {
+    public Float getCredit() {
         System.out.println("You are now viewing your current credits in the Machine");
         float total = 0f;
-        for (Currency coin : this.money) {
+        for (Coin coin : this.money) {
             total += coin.Value();
 
         }
@@ -171,7 +187,7 @@ public class Machine {
         return total;
     }
 
-    private void addCredit() {
+    public void addCredit() {
         int number = 1;
         System.out.println("You are now Inserting Credits into the Machine");
         for (String coin : coinNames) {
@@ -188,18 +204,26 @@ public class Machine {
 
         // Instantiate the coins and add them to the money variable
         for (int i = 0; i < amount; i++) {
-            Currency coin = CoinFactory.createCoin(coinNames[response - 1]);
+            Coin coin = CoinFactory.createCoin(coinNames[response - 1]);
             this.money.add(coin);
         }
 
         System.out.println("You have successfully deposited " + " " + amount + " " + coinNames[response - 1] + " " + "coins.");
     }
 
-    private void refund() {
-        for (Currency coin : this.money) {
+    public void addFundsToBucket() {
+        this.bucket.addAll(this.money);
+
+        this.money.clear();
+
+        System.out.println("Deposited Coins to Bucket. Please Collect.");
+    }
+
+    public void refund() {
+        for (Coin coin : this.bucket) {
             System.out.println("You Received : " + coin.Name());
         }
-        this.money.clear();
+        this.bucket.clear();
     }
 
     public int getInput() {
@@ -207,7 +231,7 @@ public class Machine {
         return scanner.nextInt();
     }
 
-    public List<Currency> getMoney() {
+    public List<Coin> getMoney() {
         return this.money;
     }
 
@@ -215,5 +239,110 @@ public class Machine {
         return currentUser;
     }
 
+    public void setUser(User user) {
+        this.currentUser = user;
+    }
 
+
+    public Slot getSlot(int id) {
+        return slots.get(id);
+    }
+
+    public void addStock() {
+        System.out.println("You are now viewing current stock in the Machine.");
+
+        for (Slot slot : this.slots) {
+            System.out.println(slot.getSlotId() + ": " + slot.getSlotName() + ", Price: £" + slot.getSlotPrice() + ", Stock: " + slot.getStock());
+        }
+
+        System.out.println("Please Choose which slot (int : id) you would like to add stock to.");
+        Slot slot = getSlot(this.getInput());
+        System.out.println(slot);
+        System.out.println("You have chosen slot " + slot.getSlotId() + "containing " + slot.getStock() + " " + slot.getSlotName() + ".");
+        System.out.println("Please choose how many " + slot.getSlotName() + " to add to the slot.");
+        int amount = this.getInput();
+
+        for (int i = 0; i < amount; i++) {
+            Item output = ItemFactory.createItem(itemNames[slot.getSlotId()]);
+            slot.addStock(output);
+        }
+
+    }
+
+    public void addSlot() {
+        //Initialise and create new slot.
+        ArrayList<Item> items = new ArrayList<Item>();
+        int index = this.slots.size() + 1;
+        System.out.println("Please Choose an item to designate to the slot.");
+        for (int i = 0; i < itemDictionary.length; i++) {
+            System.out.println(i + " " + itemDictionary[i]);
+        }
+        System.out.println("Please Type the Name as written in the console of the item you want. (int)");
+
+        int result = this.getInput();
+
+
+
+        Slot slot = new Slot(items, index - 1, itemDictionary[result], ItemFactory.getItemPrice(itemDictionary[result]));
+        this.slots.add(slot);
+
+        System.out.println("Successfully created slot of type " + itemDictionary[result] + ".");
+    }
+
+    public void addFunds() {
+        System.out.println("Adding Funds to the Machine.");
+
+        System.out.println("How Many of Each Coin would you like to add to the Machine?");
+
+        int result = this.getInput();
+
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("TWO_POUND");
+            this.machineMoneyTwoPound.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("POUND");
+            this.machineMoneyPound.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("FIFTY_PENCE");
+            this.machineMoneyFiftyPence.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("TWENTY_PENCE");
+            this.machineMoneyTwentyPence.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("TEN_PENCE");
+            this.machineMoneyTenPence.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("FIVE_PENCE");
+            this.machineMoneyFivePence.add(output);
+        }
+        for (int i = 0; i < result; i++){
+            Coin output = CoinFactory.createCoin("ONE_PENCE");
+            this.machineMoneyOnePence.add(output);
+        }
+
+    }
+
+    public void withdrawFunds() {
+        // Withdraw Funds from machine
+        System.out.println("Emptying all Money from the Machine.");
+
+        int[] total = new int[]{this.machineMoneyTwoPound.size(), this.machineMoneyPound.size(), this.machineMoneyFiftyPence.size(),
+        this.machineMoneyTwentyPence.size(), this.machineMoneyTenPence.size(), this.machineMoneyFivePence.size(), this.machineMoneyOnePence.size()};
+
+        System.out.println("You got " + total[0] + " Two Pound Coins, " + total[1] + " One Pound Coins, " + total[2] + " 50p coins, "
+        + total[3] + " 20p coins, " + total[4] + " 10p coins, " + total[5] + " 5p coins, " + total[6] + " 1p coins.");
+
+        this.machineMoneyTwoPound.clear();
+        this.machineMoneyPound.clear();
+        this.machineMoneyFiftyPence.clear();
+        this.machineMoneyTwentyPence.clear();
+        this.machineMoneyTenPence.clear();
+        this.machineMoneyFivePence.clear();
+        this.machineMoneyOnePence.clear();
+    }
 }

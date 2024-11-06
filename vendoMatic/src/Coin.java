@@ -1,10 +1,10 @@
-public interface Currency {
+public interface Coin {
     String Currency();
     String Name();
     Float Value();
 }
 
-class TwoPound implements Currency {
+class TwoPound implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -16,7 +16,7 @@ class TwoPound implements Currency {
     }
 }
 
-class Pound implements Currency {
+class Pound implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -28,7 +28,7 @@ class Pound implements Currency {
     }
 }
 
-class FiftyPence implements Currency {
+class FiftyPence implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -40,7 +40,7 @@ class FiftyPence implements Currency {
     }
 }
 
-class TwentyPence implements Currency {
+class TwentyPence implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -52,7 +52,7 @@ class TwentyPence implements Currency {
     }
 }
 
-class TenPence implements Currency {
+class TenPence implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -64,7 +64,7 @@ class TenPence implements Currency {
     }
 }
 
-class FivePence implements Currency {
+class FivePence implements Coin {
     public String Currency() {
         return "Sterling";
     }
@@ -76,7 +76,7 @@ class FivePence implements Currency {
     }
 }
 
-class Pence implements Currency {
+class Pence implements Coin {
     public String Currency() {
         return "Sterling";
     }

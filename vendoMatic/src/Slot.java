@@ -41,8 +41,7 @@ public class Slot {
     }
 
     public Item removeStock() {
-        Item item = this.currentItems.removeFirst();
-        return item;
+        return this.currentItems.removeFirst();
     }
 
 

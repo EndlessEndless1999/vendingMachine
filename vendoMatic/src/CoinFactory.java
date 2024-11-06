@@ -1,5 +1,5 @@
 public final class CoinFactory {
-    public static Currency createCoin(final String coinType){
+    public static Coin createCoin(final String coinType){
         return switch (coinType) {
             case "TWO_POUND" -> new TwoPound();
             case "POUND" -> new Pound();

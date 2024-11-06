@@ -123,3 +123,15 @@ class Crisps implements Item {
         return 0.75F;
     }
 }
+
+class Beer implements Item {
+    public String name() {
+        return "Beer";
+    }
+    public String type() {
+        return "Drink";
+    }
+    public Float cost() {
+        return 2.75F;
+    }
+}

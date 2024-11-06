@@ -1,21 +1,21 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 
 public class Main {
+    static Machine machine = null;
+    static User user;
     public static void main(String[] args) {
 
-        User user = startUp();
-
-        Machine machine = new Machine(0F, user);
-
-        System.out.println(machine.getCurrentUser());
-        System.out.println(machine.getMoney());
+        machine = new Machine(0F, null);
+        startUp();
+        machine.setUser(user);
 
         machine.Init();
-        machine.displayOptions();
+        machine.getCurrentUser().displayOptions();
 
     }
-    public static User startUp() {
+    public static void startUp() {
         final int password = 2504;
         User currentUser = null;
 
@@ -25,26 +25,39 @@ public class Main {
         System.out.println("1 : Customer");
         System.out.println("2 : Admin");
 
-        var user = scanner.nextInt();
+        try {
+            var _user = scanner.nextInt();
 
-        if (user == 1){
-            currentUser = new Customer();
-        }
-        else if (user == 2) {
-
-            System.out.println("Please enter the password.");
-            int input = scanner.nextInt();
-
-            if (input == password) {
-                System.out.println("Authorisation accepted. Welcome Admin");
-                currentUser = new Admin();
+            if (_user != 1 && _user != 2){
+                throw new InputMismatchException("Invalid User input. Please try Again.");
             }
-            else {
-                System.out.println("Incorrect password. Access Denied");
-                System.exit(0);
-            }
-        }
+            // EXCEPTION HERE.
 
-        return currentUser;
+
+            if (_user == 1){
+                currentUser = new Customer();
+                ((Customer) currentUser).machine = machine;
+            }
+            else if (_user == 2) {
+
+                System.out.println("Please enter the password.");
+                int input = scanner.nextInt();
+
+                if (input == password) {
+                    System.out.println("Authorisation accepted. Welcome Admin");
+                    currentUser = new Admin();
+                    ((Admin) currentUser).machine = machine;
+                }
+                else {
+                    System.out.println("Incorrect password. Access Denied");
+                    System.exit(0);
+                }
+            }
+            machine.setUser(currentUser);
+            user = currentUser;
+
+        } catch (InputMismatchException e) {
+            startUp();
+        }
     }
 }
