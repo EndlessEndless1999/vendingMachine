@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -107,7 +108,7 @@ public class Machine {
         System.out.println();
         System.out.println("Please enter the Number for the product you want.");
 
-        int input = this.getInput();
+        int input = this.getInput(slots.size());
 
         Item result = purchaseProduct(input);
 
@@ -188,27 +189,37 @@ public class Machine {
     }
 
     public void addCredit() {
-        int number = 1;
+        int number = 0;
         System.out.println("You are now Inserting Credits into the Machine");
         for (String coin : coinNames) {
             System.out.println(number + ": " + coin + ".");
             number++;
         }
         System.out.println("Please input the number corresponding to the coin type you wish to deposit.");
-        int response = getInput();
+        int response = getInput(8);
 
-        System.out.println("You have selected to insert " + coinNames[response - 1]);
+        if (response == -1){
+            addCredit();
+            return;
+        }
+
+        System.out.println("You have selected to insert " + coinNames[response]);
         System.out.println("Please select the amount you wish to deposit (Integer).");
 
-        int amount = getInput();
+        int amount = getInput(999);
+
+        if (amount == -1){
+            addCredit();
+            return;
+        }
 
         // Instantiate the coins and add them to the money variable
         for (int i = 0; i < amount; i++) {
-            Coin coin = CoinFactory.createCoin(coinNames[response - 1]);
+            Coin coin = CoinFactory.createCoin(coinNames[response ]);
             this.money.add(coin);
         }
 
-        System.out.println("You have successfully deposited " + " " + amount + " " + coinNames[response - 1] + " " + "coins.");
+        System.out.println("You have successfully deposited " + " " + amount + " " + coinNames[response] + " " + "coins.");
     }
 
     public void addFundsToBucket() {
@@ -226,9 +237,19 @@ public class Machine {
         this.bucket.clear();
     }
 
-    public int getInput() {
+    public int getInput(int max) {
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextInt();
+        int result;
+        try {
+            result = scanner.nextInt();
+            if (result < 0 || result >= max) {
+                throw new ArrayIndexOutOfBoundsException("Input is out of bounds.");
+            }
+        } catch (ArrayIndexOutOfBoundsException | InputMismatchException e){
+            return -1;
+        }
+        return result;
+
     }
 
     public List<Coin> getMoney() {
@@ -256,11 +277,16 @@ public class Machine {
         }
 
         System.out.println("Please Choose which slot (int : id) you would like to add stock to.");
-        Slot slot = getSlot(this.getInput());
+        int target = this.getInput(slots.size());
+        if (target == -1) {
+            addStock();
+            return;
+        }
+        Slot slot = getSlot(target);
         System.out.println(slot);
         System.out.println("You have chosen slot " + slot.getSlotId() + "containing " + slot.getStock() + " " + slot.getSlotName() + ".");
         System.out.println("Please choose how many " + slot.getSlotName() + " to add to the slot.");
-        int amount = this.getInput();
+        int amount = this.getInput(999);
 
         for (int i = 0; i < amount; i++) {
             Item output = ItemFactory.createItem(itemNames[slot.getSlotId()]);
@@ -277,11 +303,14 @@ public class Machine {
         for (int i = 0; i < itemDictionary.length; i++) {
             System.out.println(i + " " + itemDictionary[i]);
         }
-        System.out.println("Please Type the Name as written in the console of the item you want. (int)");
+        System.out.println("Please Type the Number as written in the console of the item you want. (int)");
 
-        int result = this.getInput();
+        int result = this.getInput(11);
 
-
+        if (result == -1) {
+            addSlot();
+            return;
+        }
 
         Slot slot = new Slot(items, index - 1, itemDictionary[result], ItemFactory.getItemPrice(itemDictionary[result]));
         this.slots.add(slot);
@@ -292,9 +321,15 @@ public class Machine {
     public void addFunds() {
         System.out.println("Adding Funds to the Machine.");
 
-        System.out.println("How Many of Each Coin would you like to add to the Machine?");
+        System.out.println("How Many of Each Coin would you like to add to the Machine? (MAX 99)");
 
-        int result = this.getInput();
+        int result = this.getInput(99);
+
+
+        if (result == -1) {
+            addFunds();
+            return;
+        }
 
         for (int i = 0; i < result; i++){
             Coin output = CoinFactory.createCoin("TWO_POUND");

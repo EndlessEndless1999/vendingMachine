@@ -1,4 +1,4 @@
-public class Admin extends Controller implements User{
+public class Admin implements User{
 
     public Machine machine;
     public void displayOptions() {
@@ -15,7 +15,7 @@ public class Admin extends Controller implements User{
         System.out.println("9 : Add Funds to Machine.");
         System.out.println("10 : Withdraw Funds from Machine.");
 
-        int input = this.machine.getInput();
+        int input = this.machine.getInput(11);
 
         switch (input) {
             case 0 -> this.machine.end();

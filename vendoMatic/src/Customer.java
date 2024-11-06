@@ -1,4 +1,4 @@
-public class Customer extends Controller implements User{
+public class Customer implements User{
     Machine machine = null;
 
     @Override
@@ -11,7 +11,7 @@ public class Customer extends Controller implements User{
         System.out.println("5 : Take Coins from Bucket");
         System.out.println("6 : Change Authorisation Level");
 
-        int input = this.machine.getInput();
+        int input = this.machine.getInput(7);
 
         switch (input) {
             case 0 -> this.machine.end();
